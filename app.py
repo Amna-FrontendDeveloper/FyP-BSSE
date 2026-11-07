@@ -311,13 +311,11 @@ def integrations_page():
     user_id = session["user_id"]
     whatsapp = get_integration(user_id, "whatsapp")
     ecommerce = get_integration(user_id, "ecommerce")
-    products = get_products_for_user(user_id) if ecommerce and ecommerce.get("connection_status") == "connected" else []
     return render_template(
         "integrations.html",
         active_page="integrations",
         whatsapp=whatsapp,
         ecommerce=ecommerce,
-        products=products,
     )
 
 
@@ -331,6 +329,40 @@ def save_whatsapp_integration():
     api_key = encrypt_value(submitted_key) if submitted_key else (existing["api_key"] if existing else None)
     save_integration(user_id, "whatsapp", phone_number=phone_number, api_key=api_key)
     flash("WhatsApp settings saved. Complete Meta webhook setup before treating the integration as live.", "success")
+    return redirect(url_for("integrations_page"))
+
+
+@app.route("/integrations/ecommerce", methods=["POST"])
+@login_required
+def save_ecommerce_integration():
+    user_id = session["user_id"]
+    existing = get_integration(user_id, "ecommerce")
+    store_platform = (request.form.get("store_platform") or "").strip().lower()
+    store_url = (request.form.get("store_url") or "").strip()
+    submitted_key = (request.form.get("api_key") or "").strip()
+
+    allowed_platforms = {"woocommerce", "shopify", "other"}
+    if store_platform not in allowed_platforms:
+        flash("Please select a valid store type.", "error")
+        return redirect(url_for("integrations_page"))
+
+    if not store_url.startswith("https://"):
+        flash("Please enter a valid store URL starting with https://.", "error")
+        return redirect(url_for("integrations_page"))
+
+    api_key = encrypt_value(submitted_key) if submitted_key else (existing["api_key"] if existing else None)
+    if not api_key:
+        flash("Please enter an API key before saving.", "error")
+        return redirect(url_for("integrations_page"))
+
+    save_integration(
+        user_id,
+        "ecommerce",
+        store_url=store_url,
+        api_key=api_key,
+        store_platform=store_platform,
+    )
+    flash("E-commerce settings saved successfully.", "success")
     return redirect(url_for("integrations_page"))
 
 
