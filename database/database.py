@@ -1,3 +1,4 @@
+import os
 import sqlite3
 from pathlib import Path
 from datetime import date
@@ -5,14 +6,26 @@ import uuid
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATABASE_PATH = BASE_DIR / "database" / "app.db"
+
+
+def _resolve_database_path(configured_path):
+    """Resolve relative database paths from the project root."""
+    path = Path(configured_path).expanduser()
+    return path if path.is_absolute() else BASE_DIR / path
+
+
+DATABASE_PATH = _resolve_database_path(
+    os.getenv("DATABASE_PATH") or "database/app.db"
+)
 
 DAILY_MESSAGE_LIMIT = 100
 DAILY_CHAT_REQUEST_LIMIT = 200
 
 
 def get_db_connection():
-    connection = sqlite3.connect(DATABASE_PATH)
+    database_path = Path(DATABASE_PATH)
+    database_path.parent.mkdir(parents=True, exist_ok=True)
+    connection = sqlite3.connect(str(database_path))
     connection.execute("PRAGMA busy_timeout = 5000")
     connection.row_factory = sqlite3.Row
     connection.execute("PRAGMA foreign_keys = ON")
