@@ -6,94 +6,48 @@
 <section class="integration-panel">
     <h2>WhatsApp Integration</h2>
     <p>Status: <span class="status-badge {{ 'connected' if whatsapp and whatsapp.phone_number and whatsapp.api_key else 'disconnected' }}">
-        {{ 'Configured (not verified)' if whatsapp and whatsapp.phone_number and whatsapp.api_key else 'Not Configured' }}
+        {{ 'Settings Saved' if whatsapp and whatsapp.phone_number and whatsapp.api_key else 'Not Configured' }}
     </span></p>
-    <p class="conversation-meta">Saving a phone number and access token does not connect WhatsApp by itself. A Meta webhook and Cloud API setup are still required for live messaging.</p>
     <form method="POST" action="{{ url_for('save_whatsapp_integration') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label>Phone Number</label>
-        <input type="text" name="phone_number" value="{{ whatsapp.phone_number if whatsapp else '' }}" placeholder="+1234567890">
+        <label for="whatsapp-phone">WhatsApp Number</label>
+        <input id="whatsapp-phone" type="text" name="phone_number" value="{{ whatsapp.phone_number if whatsapp else '' }}" placeholder="+1234567890">
 
-        <label>WhatsApp API Key</label>
-        <input type="password" name="api_key" placeholder="{{ '•••• saved (leave blank to keep)' if whatsapp and whatsapp.api_key else 'Paste your WhatsApp Business API key' }}">
+        <label for="whatsapp-key">WhatsApp API Key</label>
+        <input id="whatsapp-key" type="password" name="api_key" autocomplete="new-password" placeholder="{{ 'Saved securely (leave blank to keep)' if whatsapp and whatsapp.api_key else 'Enter API key' }}">
 
         <button type="submit" class="primary-button">Save WhatsApp Settings</button>
     </form>
+    <p class="conversation-meta">This page stores your settings for future use. It does not connect to WhatsApp or send messages.</p>
 </section>
 
 <section class="integration-panel">
-    <h2>WooCommerce Integration</h2>
+    <h2>E-commerce Integration</h2>
     <p>Status:
-        <span class="status-badge {{ 'connected' if ecommerce and ecommerce.connection_status == 'connected' else 'disconnected' }}">
-            {% if ecommerce and ecommerce.connection_status == 'connected' %}Connected
-            {% elif ecommerce and ecommerce.connection_status == 'failed' %}Connection Failed
-            {% elif ecommerce %}Saved, Not Tested
-            {% else %}Not Connected{% endif %}
+        <span class="status-badge {{ 'connected' if ecommerce and ecommerce.store_url and ecommerce.api_key else 'disconnected' }}">
+            {{ 'Settings Saved' if ecommerce and ecommerce.store_url and ecommerce.api_key else 'Not Configured' }}
         </span>
-        {% if ecommerce and ecommerce.last_tested_at %}
-            <span class="conversation-meta">last tested {{ ecommerce.last_tested_at }}</span>
-        {% endif %}
     </p>
 
-    <form method="POST" action="{{ url_for('connect_woocommerce') }}">
+    <form method="POST" action="{{ url_for('save_ecommerce_integration') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <label>Store URL</label>
-        <input type="text" name="store_url" value="{{ ecommerce.store_url if ecommerce else '' }}" placeholder="https://yourstore.com" required>
 
-        <label>Consumer Key</label>
-        <input type="password" name="consumer_key" placeholder="{{ 'ck_•••• saved (leave blank to keep)' if ecommerce else 'ck_xxxxxxxxxxxxxxxxxxxxxxxx' }}">
+        <label for="store-platform">Store Type</label>
+        <select id="store-platform" name="store_platform" required>
+            <option value="">Select store type</option>
+            <option value="woocommerce" {{ 'selected' if ecommerce and ecommerce.store_platform == 'woocommerce' else '' }}>WooCommerce</option>
+            <option value="shopify" {{ 'selected' if ecommerce and ecommerce.store_platform == 'shopify' else '' }}>Shopify</option>
+            <option value="other" {{ 'selected' if ecommerce and ecommerce.store_platform == 'other' else '' }}>Other</option>
+        </select>
 
-        <label>Consumer Secret</label>
-        <input type="password" name="consumer_secret" placeholder="{{ 'cs_•••• saved (leave blank to keep)' if ecommerce else 'cs_xxxxxxxxxxxxxxxxxxxxxxxx' }}">
+        <label for="store-url">Store URL</label>
+        <input id="store-url" type="url" name="store_url" value="{{ ecommerce.store_url if ecommerce else '' }}" placeholder="https://yourstore.com" required>
 
-        <button type="submit" class="primary-button">Save Store Details</button>
+        <label for="ecommerce-key">API Key</label>
+        <input id="ecommerce-key" type="password" name="api_key" autocomplete="new-password" placeholder="{{ 'Saved securely (leave blank to keep)' if ecommerce and ecommerce.api_key else 'Enter API key' }}" {{ '' if ecommerce and ecommerce.api_key else 'required' }}>
+
+        <button type="submit" class="primary-button">Save E-commerce Settings</button>
     </form>
-
-    {% if ecommerce %}
-    <div class="integration-actions">
-        <form method="POST" action="{{ url_for('test_woocommerce_connection') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="secondary-button">Test Connection</button>
-        </form>
-        <form method="POST" action="{{ url_for('fetch_woocommerce_products') }}">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="secondary-button" {{ 'disabled' if ecommerce.connection_status != 'connected' else '' }}>Fetch Products</button>
-        </form>
-        <form method="POST" action="{{ url_for('disconnect_woocommerce') }}" onsubmit="return confirm('Disconnect WooCommerce and clear cached products?');">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit" class="link-button danger">Disconnect</button>
-        </form>
-    </div>
-    {% endif %}
+    <p class="conversation-meta">Your store type, URL and API key are saved in the database for future use. A live store connection is not required for this project requirement.</p>
 </section>
-
-{% if products %}
-<section class="integration-panel">
-    <h2>Fetched Products ({{ products|length }})</h2>
-    <div class="product-table-wrapper">
-        <table class="product-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>SKU</th>
-                    <th>Has Variations</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in products %}
-                <tr>
-                    <td>{{ p.name }}</td>
-                    <td>{{ p.price }}</td>
-                    <td>{{ p.stock_status }}</td>
-                    <td>{{ p.sku or '—' }}</td>
-                    <td>{{ 'Yes' if p.variations else 'No' }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</section>
-{% endif %}
 {% endblock %}
