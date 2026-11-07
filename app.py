@@ -85,8 +85,14 @@ oauth.register(
 PREMIUM_PLAN_INFO = {
     "message": "You've reached today's free limit of 100 AI messages.",
     "plan_name": "Premium Plan",
-    "plan_benefit": "Unlimited daily AI messages, priority response times.",
-    "cta": "Upgrade information coming soon.",
+    "plan_benefit": "Unlimited daily AI messages and priority response times.",
+    "plan_features": [
+        "Unlimited daily AI messages",
+        "Priority response times",
+        "WhatsApp and e-commerce integration support",
+        "Conversation history and customer-support tools",
+    ],
+    "cta": "Premium checkout is not enabled yet. Contact the project administrator for plan information.",
 }
 
 MAX_CHAT_MESSAGE_LENGTH = 2000
@@ -405,7 +411,16 @@ def profile_page():
 @app.route("/subscription")
 @login_required
 def subscription_page():
-    return render_template("subscription.html", active_page="subscription")
+    messages_used_today = get_today_message_count(session["user_id"])
+    remaining_messages = max(DAILY_MESSAGE_LIMIT - messages_used_today, 0)
+    return render_template(
+        "subscription.html",
+        active_page="subscription",
+        messages_used_today=messages_used_today,
+        remaining_messages=remaining_messages,
+        daily_message_limit=DAILY_MESSAGE_LIMIT,
+        premium_plan=PREMIUM_PLAN_INFO,
+    )
 
 
 @app.route("/admin")
