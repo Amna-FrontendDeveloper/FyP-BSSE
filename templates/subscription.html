@@ -2,12 +2,23 @@
 {% block title %}Subscription{% endblock %}
 {% block content %}
 <h1>Subscription</h1>
+
 <div class="card">
     <h3>Current Plan: Free</h3>
-    <p>100 AI messages per day, standard support.</p>
+    <p>Your free plan includes {{ daily_message_limit }} AI messages per day and standard response priority.</p>
+    <p><strong>Messages used today:</strong> {{ messages_used_today }} / {{ daily_message_limit }}</p>
+    <p><strong>Messages remaining today:</strong> {{ remaining_messages }}</p>
 </div>
+
 <div class="card">
-    <h3>Premium Plan (Coming Soon)</h3>
-    <p>Unlimited daily AI messages, priority responses, WhatsApp & e-commerce integrations, dedicated support.</p>
+    <h3>{{ premium_plan.plan_name }}</h3>
+    <p>{{ premium_plan.plan_benefit }}</p>
+    <ul>
+        {% for feature in premium_plan.plan_features %}
+        <li>{{ feature }}</li>
+        {% endfor %}
+    </ul>
+    <p>{{ premium_plan.cta }}</p>
+    <p><small>Note: This project currently displays Premium plan information only. Online payments and automatic plan upgrades are not enabled.</small></p>
 </div>
 {% endblock %}
