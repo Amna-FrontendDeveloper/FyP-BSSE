@@ -328,8 +328,9 @@ def save_whatsapp_integration():
     existing = get_integration(user_id, "whatsapp")
     phone_number = (request.form.get("phone_number") or "").strip()
     submitted_key = (request.form.get("api_key") or "").strip()
-    api_key = submitted_key if submitted_key else (existing["api_key"] if existing else None)
+    api_key = encrypt_value(submitted_key) if submitted_key else (existing["api_key"] if existing else None)
     save_integration(user_id, "whatsapp", phone_number=phone_number, api_key=api_key)
+    flash("WhatsApp settings saved. Complete Meta webhook setup before treating the integration as live.", "success")
     return redirect(url_for("integrations_page"))
 
 
