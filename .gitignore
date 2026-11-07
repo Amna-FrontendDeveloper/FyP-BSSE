@@ -1,0 +1,12 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.env.*
+!.env.example
+database/*.db
+backups/
+logs/
+.pytest_cache/
+.DS_Store

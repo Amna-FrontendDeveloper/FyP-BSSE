@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Conversation{% endblock %}
+{% block content %}
+<a href="{{ url_for('conversations_page') }}">&larr; Back to conversations</a>
+<h1>{{ conversation.title or "Conversation" }}</h1>
+
+{% if conversation.needs_human %}
+<div class="escalation-banner {{ 'resolved' if conversation.resolved else '' }}">
+    {% if conversation.resolved %}
+        <strong>Resolved.</strong> Reason was: {{ conversation.escalation_reason }} (flagged {{ conversation.escalated_at }}, resolved {{ conversation.resolved_at }})
+    {% else %}
+        <strong>Human Support Required.</strong> Reason: {{ conversation.escalation_reason }} (flagged {{ conversation.escalated_at }})
+        <form method="POST" action="{{ url_for('resolve_conversation_route', conversation_id=conversation.id) }}" style="display:inline; margin-left:10px;">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="secondary-button">Mark Resolved</button>
+        </form>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="chat-window static">
+    {% for msg in messages %}
+    <div class="message {{ msg.sender }}">{{ msg.message }}</div>
+    {% endfor %}
+</div>
+{% endblock %}

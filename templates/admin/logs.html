@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}System Logs{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_dashboard') }}">&larr; Back to Admin Dashboard</a>
+<h1>System Logs</h1>
+
+<div class="integration-actions">
+    <a href="{{ url_for('admin_logs_page') }}" class="secondary-button {{ 'active-filter' if not current_filter else '' }}">All</a>
+    <a href="{{ url_for('admin_logs_page', type='activity') }}" class="secondary-button {{ 'active-filter' if current_filter == 'activity' else '' }}">Activity</a>
+    <a href="{{ url_for('admin_logs_page', type='error') }}" class="secondary-button {{ 'active-filter' if current_filter == 'error' else '' }}">Errors</a>
+    <a href="{{ url_for('admin_logs_page', type='security') }}" class="secondary-button {{ 'active-filter' if current_filter == 'security' else '' }}">Security</a>
+</div>
+
+<div class="product-table-wrapper">
+<table class="product-table">
+    <thead><tr><th>Type</th><th>Message</th><th>User</th><th>Time</th></tr></thead>
+    <tbody>
+        {% for log in logs %}
+        <tr><td><span class="status-badge {{ 'disconnected' if log.log_type == 'error' else 'connected' }}">{{ log.log_type }}</span></td><td>{{ log.message }}</td><td>{{ log.user_email or '—' }}</td><td>{{ log.created_at }}</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

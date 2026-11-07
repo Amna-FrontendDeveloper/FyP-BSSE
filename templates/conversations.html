@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Conversations{% endblock %}
+{% block content %}
+<h1>Your Conversations</h1>
+
+{% if conversations %}
+<div class="conversation-list">
+    {% for convo in conversations %}
+    <div class="conversation-item">
+        <div>
+            <strong>{{ convo.title or "Untitled Conversation" }}</strong>
+            {% if convo.needs_human and not convo.resolved %}
+                <span class="status-badge disconnected">Needs Human</span>
+            {% elif convo.needs_human and convo.resolved %}
+                <span class="status-badge connected">Resolved</span>
+            {% endif %}
+            <p class="conversation-preview">{{ convo.last_message or "No messages yet." }}</p>
+            <span class="conversation-meta">{{ convo.message_count }} messages · started {{ convo.created_at }}</span>
+        </div>
+        <div class="conversation-actions">
+            <a href="{{ url_for('conversation_detail_page', conversation_id=convo.id) }}">Open</a>
+            <form method="POST" action="{{ url_for('delete_conversation_route', conversation_id=convo.id) }}" onsubmit="return confirm('Delete this conversation?');" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="link-button danger">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No conversations yet. <a href="{{ url_for('chat_page') }}">Start chatting</a>.</p>
+{% endif %}
+{% endblock %}

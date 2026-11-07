@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - AI Customer Support Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="chat-container">
+        <h1>AI Customer Support Agent</h1>
+        <p>Sign in to start chatting with your AI assistant.</p>
+        <a href="{{ url_for('login_google') }}" class="google-login-button">Sign in with Google</a>
+    </main>
+</body>
+</html>

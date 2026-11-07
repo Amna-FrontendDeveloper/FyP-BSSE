@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}AI Customer Support Agent{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-layout">
+        <nav class="sidebar">
+            <div class="sidebar-title">AI customer Support Agent</div>
+            <a href="{{ url_for('dashboard') }}" class="{{ 'active' if active_page == 'overview' else '' }}">Overview</a>
+            <a href="{{ url_for('chat_page') }}" class="{{ 'active' if active_page == 'chat' else '' }}">AI Chat</a>
+            <a href="{{ url_for('conversations_page') }}" class="{{ 'active' if active_page == 'conversations' else '' }}">Conversations</a>
+            <a href="{{ url_for('escalations_page') }}" class="{{ 'active' if active_page == 'escalations' else '' }}">Escalations</a>
+            <a href="{{ url_for('integrations_page') }}" class="{{ 'active' if active_page == 'integrations' else '' }}">Integrations</a>
+            <a href="{{ url_for('profile_page') }}" class="{{ 'active' if active_page == 'profile' else '' }}">Profile</a>
+            <a href="{{ url_for('subscription_page') }}" class="{{ 'active' if active_page == 'subscription' else '' }}">Subscription</a>
+            {% if session.is_admin %}
+            <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if active_page == 'admin' else '' }}">Admin</a>
+            {% endif %}
+            <form class="logout-form" method="POST" action="{{ url_for('logout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </nav>
+        <main class="main-content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <div class="flash-messages">
+                  {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">{{ message }}</div>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<h1>Welcome, {{ user.name }} 👋</h1>
+
+<div class="cards-grid">
+    <div class="card">
+        <h3>Today's Messages</h3>
+        <p class="big-number">{{ messages_used_today }}</p>
+    </div>
+    <div class="card">
+        <h3>Remaining Free Messages</h3>
+        <p class="big-number">{{ remaining_messages }}</p>
+    </div>
+    <div class="card">
+        <h3>Current Plan</h3>
+        <p class="big-number">Free</p>
+    </div>
+    <div class="card">
+        <h3>Needs Human Support</h3>
+        <p class="big-number {{ 'alert' if unresolved_escalations > 0 else '' }}">{{ unresolved_escalations }}</p>
+    </div>
+</div>
+
+<a href="{{ url_for('chat_page') }}" class="primary-button">Open AI Chat</a>
+{% endblock %}

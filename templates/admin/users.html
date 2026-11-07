@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_dashboard') }}">&larr; Back to Admin Dashboard</a>
+<h1>All Users</h1>
+
+<div class="product-table-wrapper">
+<table class="product-table">
+    <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Msgs Today</th><th>Total Msgs</th><th>WhatsApp</th><th>WooCommerce</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.name }}{% if u.is_admin %} <span class="status-badge connected">Admin</span>{% endif %}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.created_at }}</td>
+            <td>{{ u.messages_today or 0 }}</td>
+            <td>{{ u.total_messages or 0 }}</td>
+            <td>{{ 'Yes' if u.has_whatsapp else 'No' }}</td>
+            <td>{{ u.ecommerce_status or 'Not Connected' }}</td>
+            <td><span class="status-badge {{ 'disconnected' if u.is_disabled else 'connected' }}">{{ 'Disabled' if u.is_disabled else 'Active' }}</span></td>
+            <td><a href="{{ url_for('admin_user_detail_page', user_id=u.id) }}">View</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}

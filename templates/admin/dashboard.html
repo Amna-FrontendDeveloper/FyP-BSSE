@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h1>Admin Dashboard</h1>
+<div class="cards-grid">
+    <div class="card"><h3>Total Users</h3><p class="big-number">{{ stats.total_users }}</p></div>
+    <div class="card"><h3>Disabled Users</h3><p class="big-number {{ 'alert' if stats.disabled_users > 0 else '' }}">{{ stats.disabled_users }}</p></div>
+    <div class="card"><h3>Total Conversations</h3><p class="big-number">{{ stats.total_conversations }}</p></div>
+    <div class="card"><h3>Total Messages</h3><p class="big-number">{{ stats.total_messages }}</p></div>
+    <div class="card"><h3>Messages Today</h3><p class="big-number">{{ stats.messages_today }}</p></div>
+    <div class="card"><h3>Unresolved Escalations</h3><p class="big-number {{ 'alert' if stats.unresolved_escalations > 0 else '' }}">{{ stats.unresolved_escalations }}</p></div>
+    <div class="card"><h3>Connected WooCommerce Stores</h3><p class="big-number">{{ stats.connected_woocommerce_stores }}</p></div>
+    <div class="card"><h3>Errors Today</h3><p class="big-number {{ 'alert' if stats.errors_today > 0 else '' }}">{{ stats.errors_today }}</p></div>
+</div>
+
+<div class="admin-links">
+    <a href="{{ url_for('admin_users_page') }}" class="primary-button">Manage Users</a>
+    <a href="{{ url_for('admin_logs_page') }}" class="primary-button">View Logs</a>
+</div>
+{% endblock %}

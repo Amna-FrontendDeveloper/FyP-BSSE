@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Escalations{% endblock %}
+{% block content %}
+<h1>Human Support Required</h1>
+
+{% if escalations %}
+<div class="conversation-list">
+    {% for e in escalations %}
+    <div class="conversation-item">
+        <div>
+            <strong>{{ e.title or "Conversation #" ~ e.id }}</strong>
+            {% if e.resolved %}
+                <span class="status-badge connected">Resolved</span>
+            {% else %}
+                <span class="status-badge disconnected">Needs Human</span>
+            {% endif %}
+            <p class="conversation-preview">Reason: {{ e.escalation_reason }}</p>
+            <span class="conversation-meta">
+                Flagged {{ e.escalated_at }}
+                {% if e.resolved %} · Resolved {{ e.resolved_at }}{% endif %}
+            </span>
+        </div>
+        <div class="conversation-actions">
+            <a href="{{ url_for('conversation_detail_page', conversation_id=e.id) }}">Open</a>
+            {% if not e.resolved %}
+            <form method="POST" action="{{ url_for('resolve_conversation_route', conversation_id=e.id) }}" style="display:inline;">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="secondary-button">Mark Resolved</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No conversations currently need human support.</p>
+{% endif %}
+{% endblock %}

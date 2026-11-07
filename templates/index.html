@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>AI Customer Support Agent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <main class="chat-container">
+        <div class="top-bar">
+            <span>Hello, {{ user_name or "there" }}</span>
+            <form class="logout-form" method="POST" action="{{ url_for('logout') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+
+        <h1>AI Customer Support Agent</h1>
+
+        <div id="chat-window" class="chat-window">
+            <div class="message assistant">Hi! Ask me anything and I'll do my best to help.</div>
+        </div>
+
+        <div id="usage-indicator" class="usage-indicator"></div>
+
+        <form id="chat-form" class="chat-form">
+            <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off" required>
+            <button type="submit" id="send-button">Send</button>
+        </form>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

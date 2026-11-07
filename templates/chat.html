@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}AI Chat{% endblock %}
+{% block content %}
+<h1>AI Chat</h1>
+
+<div id="chat-window" class="chat-window">
+    <div class="message assistant">Hi! Ask me anything and I'll do my best to help.</div>
+</div>
+
+<div id="usage-indicator" class="usage-indicator"></div>
+
+<form id="chat-form" class="chat-form">
+    <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off" required>
+    <button type="submit" id="send-button">Send</button>
+</form>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

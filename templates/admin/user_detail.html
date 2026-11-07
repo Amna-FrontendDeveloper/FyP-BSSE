@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}User Detail{% endblock %}
+{% block content %}
+<a href="{{ url_for('admin_users_page') }}">&larr; Back to Users</a>
+<h1>{{ detail.user.name }}</h1>
+
+<div class="card">
+    <p><strong>Email:</strong> {{ detail.user.email }}</p>
+    <p><strong>Joined:</strong> {{ detail.user.created_at }}</p>
+    <p><strong>Role:</strong> {{ 'Admin' if detail.user.is_admin else 'Customer' }}</p>
+    <p><strong>Status:</strong> <span class="status-badge {{ 'disconnected' if detail.user.is_disabled else 'connected' }}">{{ 'Disabled' if detail.user.is_disabled else 'Active' }}</span></p>
+    <p><strong>Subscription Plan:</strong> Free</p>
+    <p><strong>Total Conversations:</strong> {{ detail.conversation_count }}</p>
+    <p><strong>Total Messages Sent:</strong> {{ detail.total_messages }}</p>
+</div>
+
+<div class="card">
+    <h3>Integrations</h3>
+    {% if detail.integrations %}
+        {% for i in detail.integrations %}
+        <p><strong>{{ i.type | capitalize }}</strong> — {% if i.type == 'ecommerce' %}{{ i.connection_status or 'not set up' }} ({{ i.store_platform or 'unknown' }}, {{ i.store_url or 'no URL' }}){% else %}{{ 'Connected' if i.phone_number else 'Not Connected' }}{% endif %}</p>
+        {% endfor %}
+    {% else %}
+        <p>No integrations configured.</p>
+    {% endif %}
+    <p class="conversation-meta">Note: API keys and secrets are never shown here, even to admins.</p>
+</div>
+
+<form method="POST" action="{{ url_for('admin_toggle_user_disabled', user_id=detail.user.id) }}" onsubmit="return confirm('Are you sure?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% if detail.user.is_disabled %}<button type="submit" class="primary-button">Enable User</button>
+    {% else %}<button type="submit" class="link-button danger">Disable User</button>{% endif %}
+</form>
+{% endblock %}
