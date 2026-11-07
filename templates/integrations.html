@@ -5,9 +5,10 @@
 
 <section class="integration-panel">
     <h2>WhatsApp Integration</h2>
-    <p>Status: <span class="status-badge {{ 'connected' if whatsapp and whatsapp.phone_number else 'disconnected' }}">
-        {{ 'Connected' if whatsapp and whatsapp.phone_number else 'Not Connected' }}
+    <p>Status: <span class="status-badge {{ 'connected' if whatsapp and whatsapp.phone_number and whatsapp.api_key else 'disconnected' }}">
+        {{ 'Configured (not verified)' if whatsapp and whatsapp.phone_number and whatsapp.api_key else 'Not Configured' }}
     </span></p>
+    <p class="conversation-meta">Saving a phone number and access token does not connect WhatsApp by itself. A Meta webhook and Cloud API setup are still required for live messaging.</p>
     <form method="POST" action="{{ url_for('save_whatsapp_integration') }}">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <label>Phone Number</label>
